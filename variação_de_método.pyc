@@ -9,7 +9,7 @@ K = 50  # Preço de exercício
 T = 5/12  # Tempo até a expiração (5 meses)
 S0 = 50  # Preço atual da ação (usaremos apenas um valor para simplificar)
 N = 200  # Número de passos de tempo
-M = 10000  # Número de trajetórias
+M = 20  # Número de trajetórias
 
 # Função para calcular o preço da opção usando Monte Carlo
 def monte_carlo(S0, K, T, r, sigma, N, M):
