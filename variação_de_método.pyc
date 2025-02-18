@@ -1,0 +1,37 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import erfc
+
+# Parâmetros
+r = 0.06       # Taxa de juros
+sigma = 0.2    # Volatilidade
+K = 50         # Preço de exercício
+T = 5/12       # Tempo até o vencimento (5 meses)
+N = 200        # Número de passos
+M = 10000      # Número de trajetórias
+s_values = [45, 50, 55]  # Preços atuais da ação
+
+# Função para simulação de Monte Carlo
+def monte_carlo_option_price(s, r, sigma, K, T, N, M):
+    dt = T / N
+    S = np.zeros((M, N+1))
+    S[:, 0] = s
+    for n in range(N):
+        epsilon = np.random.choice([1, -1], size=M)
+        S[:, n+1] = S[:, n] + r * S[:, n] * dt + sigma * S[:, n] * epsilon * np.sqrt(dt)
+    payoff = np.maximum(S[:, -1] - K, 0)
+    C = np.exp(-r * T) * np.mean(payoff)
+    return C
+
+# Função para fórmula de Black-Scholes
+def black_scholes(s, r, sigma, K, T):
+    d1 = (np.log(s / K) + (r + sigma**2 / 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+    C = (s / 2) * erfc(-d1 / np.sqrt(2)) - (K / 2) * np.exp(-r * T) * erfc(-d2 / np.sqrt(2))
+    return C
+
+# Cálculo das estimativas
+for s in s_values:
+    C_mc = monte_carlo_option_price(s, r, sigma, K, T, N, M)
+    C_bs = black_scholes(s, r, sigma, K, T)
+    print(f"Preço da ação: {s}, Monte Carlo: {C_mc:.4f}, Black-Scholes: {C_bs:.4f}")
